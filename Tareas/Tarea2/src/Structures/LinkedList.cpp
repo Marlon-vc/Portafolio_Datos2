@@ -19,7 +19,8 @@ class LinkedList {
 
 LinkedList::LinkedList() {
     size = 0;
-
+    head = NULL;
+    tail = NULL;
 }
 
 void LinkedList::insertStart(int value) {
@@ -55,7 +56,8 @@ Node *LinkedList::getNode(int index) {
 
 void LinkedList::modify(int value, int index) {
     if (index >= 0 && index < size) {
-        
+        Node *temp = getNode(index);
+        temp->setValue(value);
     }
 }
 
@@ -63,12 +65,13 @@ int LinkedList::get(int index) {
     if (index < 0 || index >= size) {
         return -1;
     } else {
-        Node *temp = head;
-        int c = 0;
-        while (c != index) {
-            temp = temp->getNext();
-            c++;
-        }
+        // Node *temp = head;
+        // int c = 0;
+        // while (c != index) {
+        //     temp = temp->getNext();
+        //     c++;
+        // }
+        Node *temp = getNode(index);
         return temp->getValue();
     }
 }
@@ -95,7 +98,7 @@ void LinkedList::print() {
 int main() {
     LinkedList *list = new LinkedList();
 
-    // list->insertStart(10);
+    list->insertStart(10);
     list->insertStart(4);
     list->insertStart(21);
     list->insertStart(32);
@@ -105,6 +108,10 @@ int main() {
     cout << list->get(2) << "\n";
 
     list->deleteStart();
+
+    list->print();
+
+    list->modify(99, 2);
 
     list->print();
 }
