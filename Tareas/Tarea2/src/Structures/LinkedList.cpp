@@ -94,25 +94,3 @@ void LinkedList::print() {
     }
     cout << "]\n";
 }
-
-int main() {
-    LinkedList *list = new LinkedList();
-
-    list->insertStart(10);
-    list->insertStart(4);
-    list->insertStart(21);
-    list->insertStart(32);
-    
-    list->print();
-
-    cout << list->get(2) << "\n";
-
-    list->deleteStart();
-
-    list->print();
-
-    list->modify(99, 2);
-
-    list->print();
-}
-
