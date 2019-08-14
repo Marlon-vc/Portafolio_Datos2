@@ -78,12 +78,3 @@ void BinaryTree::traverse(TreeNode *current) {
         traverse(current->getRight());
     }
 }
-
-int main() {
-    BinaryTree *tree = new BinaryTree();
-    tree->insert(10);
-    tree->insert(6);
-    tree->insert(21);
-    tree->print();
-}
-
