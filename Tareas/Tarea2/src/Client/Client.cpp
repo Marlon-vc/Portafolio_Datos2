@@ -8,6 +8,12 @@ using namespace std;
 
 const int PORT = 8080;
 
+int main() {
+    Client *client = new Client();
+    char msg[] = "Hello server!";
+    client->start(msg);
+}
+
 class Client {
     public:
         int PORT = 8080;
