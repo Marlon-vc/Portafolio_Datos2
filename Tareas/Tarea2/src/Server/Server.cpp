@@ -4,22 +4,22 @@
 #include <stdlib.h>
 #include <netinet/in.h>
 #include <string.h>
-#include <ctime>
 #include <iostream>
 using namespace std;
 
-int main() {
-	Server *server = new Server();
-	server->start();
-}
+class ServerLogic {
+	public:
+		virtual char *process(char *data);
+};
 
 class Server {
 	public:
-		Server();
+		Server(ServerLogic *logicProcessor);
 		bool active;
 		int PORT;
 		void start();
 	private:
+		ServerLogic *logicProcessor;
 		int file_desc, client_conn;
 		sockaddr_in server_address;
 		int address_len;
@@ -30,7 +30,8 @@ class Server {
 		char *process();
 };
 
-Server::Server() {
+Server::Server(ServerLogic *logicProcessor) {
+	this->logicProcessor = logicProcessor;
 	address_len = sizeof(server_address);
 	opt = 1;
 	buffer[2048] = {0};
@@ -52,7 +53,9 @@ void Server::start() {
 			//Data read stored in buffer.
 			read(client_conn, buffer, 2048);
 
-			char *msg = process();
+			//We send the data from client to the serverLogic class to handle it
+			// char *msg = process();
+			char *msg = logicProcessor->process(buffer);
 
 			//Send data to client.
 			send(client_conn, msg, strlen(msg), 0);
@@ -88,4 +91,3 @@ char *Server::process() {
 	static char msg[] = "Received successfully";
 	return msg;
 }
-
