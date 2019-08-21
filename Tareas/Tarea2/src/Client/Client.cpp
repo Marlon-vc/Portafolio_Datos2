@@ -8,12 +8,6 @@ using namespace std;
 
 const int PORT = 8080;
 
-int main() {
-    Client *client = new Client();
-    char msg[] = "Hello server!";
-    client->start(msg);
-}
-
 class Client {
     public:
         int PORT = 8080;
@@ -80,4 +74,10 @@ void Client::cleanBuffer() {
 	for (int i = 0; i < 2048; i++) {
 		buffer[i] = a;
 	}
+}
+
+int main() {
+    Client *client = new Client();
+    char msg[] = "Hello server!";
+    client->start(msg);
 }
