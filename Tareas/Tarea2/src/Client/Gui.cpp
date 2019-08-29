@@ -5,7 +5,7 @@
 #include <gtkmm-3.0/gtkmm/grid.h>
 #include <gtkmm-3.0/gtkmm/stack.h>
 #include <gtkmm-3.0/gtkmm/entry.h>
-#include "JsonGenerator.cpp"
+#include "Client.cpp"
 
 enum OperationType {
     bInsert,
@@ -21,6 +21,7 @@ class MyApp: public Gtk::Window {
         MyApp();
         virtual ~MyApp();
     private:
+        Client *client;
         OperationType operationType;
         Gtk::Stack mainContainer;
         //Start window
@@ -28,12 +29,12 @@ class MyApp: public Gtk::Window {
         Gtk::Grid startGrid;
         Gtk::Button binaryButton, listButton;
         //Binary Tree
-        Gtk::Label binaryTitle, bLabel;
+        Gtk::Label binaryTitle, bLabel, treeLabel;
         Gtk::Grid binaryGrid;
         Gtk::Button bInsertButton, bDeleteButton, bBackButton, bSubmit;
         Gtk::Entry bEntry;
         //LinkedList
-        Gtk::Label listTitle, lLabel;
+        Gtk::Label listTitle, lLabel, listLabel;
         Gtk::Grid listGrid;
         Gtk::Button lInsertStartButton, lDeleteStartButton, lModifyButton, lGetButton, lBackButton, lSubmit;
         Gtk::Entry lEntry, lIndexEntry;
@@ -42,6 +43,8 @@ class MyApp: public Gtk::Window {
         void showListWindow();
         void toStart();
         void process();
+        bool badBinaryInput();
+        bool badListInput(bool both);
         //Operation Types
         void _bInsert();
         void _bDelete();
@@ -72,6 +75,7 @@ lModifyButton("Modificar"),
 lGetButton("Obtener por posición"),
 lBackButton("Atrás")
 {
+    client = new Client();
     //Start window
     startMsg.set_vexpand(true);
     startMsg.set_justify(Gtk::JUSTIFY_CENTER);
@@ -88,12 +92,13 @@ lBackButton("Atrás")
 
     //Binary Tree Window
     binaryGrid.attach(binaryTitle, 0, 0);
-    binaryGrid.attach(bInsertButton, 0, 1);
-    binaryGrid.attach(bDeleteButton, 0, 2);
-    binaryGrid.attach(bBackButton, 1, 3);
+    binaryGrid.attach(bInsertButton, 0, 1, 1, 2);
+    binaryGrid.attach(bDeleteButton, 0, 3);
+    binaryGrid.attach(bBackButton, 1, 4);
     binaryGrid.attach(bLabel, 1, 0);
     binaryGrid.attach(bEntry, 1, 1);
-    binaryGrid.attach(bSubmit, 1, 2);
+    binaryGrid.attach(treeLabel, 1, 2);
+    binaryGrid.attach(bSubmit, 1, 3);
 
     bEntry.set_placeholder_text("Número..");
     bLabel.set_vexpand(true);
@@ -122,7 +127,8 @@ lBackButton("Atrás")
     listGrid.attach(lLabel, 1, 0);
     listGrid.attach(lEntry, 1, 1);
     listGrid.attach(lIndexEntry, 1, 2);
-    listGrid.attach(lSubmit, 1, 3, 1, 2);
+    listGrid.attach(lSubmit, 1, 3);
+    listGrid.attach(listLabel, 1, 4);
 
     lEntry.set_placeholder_text("Número..");
     lIndexEntry.set_placeholder_text("Índice a modificar");
@@ -139,7 +145,7 @@ lBackButton("Atrás")
     lGetButton.set_vexpand(true);
     lLabel.set_vexpand(true);
     lLabel.set_hexpand(true);
-    
+
     lInsertStartButton.signal_clicked().connect(sigc::mem_fun(*this, &MyApp::_lInsert));
     lDeleteStartButton.signal_clicked().connect(sigc::mem_fun(*this, &MyApp::_lDelete));
     lModifyButton.signal_clicked().connect(sigc::mem_fun(*this, &MyApp::_lModify));
@@ -168,15 +174,17 @@ void MyApp::showBinaryWindow() {
     operationType = bInsert;
     bLabel.set_text("Ingresa el número a insertar");
     bSubmit.set_label("Insertar");
+    bEntry.set_text("");
     mainContainer.set_visible_child("binary");
 }
-
 void MyApp::showListWindow() {
     std::cout << "show linked list operations..\n";
     operationType = lInsert;
     lLabel.set_text("Ingresa el número a insertar");
     lSubmit.set_label("Insertar");
     lIndexEntry.hide();
+    lEntry.set_text("");
+    lIndexEntry.set_text("");
     mainContainer.set_visible_child("list");
 }
 void MyApp::toStart() {
@@ -186,29 +194,60 @@ void MyApp::toStart() {
 
 MyApp::~MyApp() {}
 
+bool MyApp::badBinaryInput() {
+    bool input = false;
+    try {
+        std::stol(bEntry.get_text());
+    } catch(std::exception ex) {
+        input = true;
+    }
+    return input;
+}
+bool MyApp::badListInput(bool both) {
+    bool input1 = false;
+    bool input2 = false;
+    try {
+        std::stol(lEntry.get_text());
+    } catch (std::exception e) {
+        input1 = true;
+    }
+    if (both) {
+        try {
+            std::stol(lIndexEntry.get_text());
+        } catch (std::exception e) {
+            input2 = true;
+        }
+    }
+    return !((input1 == false) && (input2 == false));
+}
+
 void MyApp::process() {
+    bool badInput = false;
     std::string structure;
     std::string operation;
     std::string number;
-    std::string index;
+    std::string index = "-";
 
     switch(operationType) {
         case bInsert:
             structure = "binaryTree";
             operation = "insert";
             number = bEntry.get_text();
+            badInput = badBinaryInput();
             bEntry.set_text("");
             break;
         case bDelete:
             structure = "binaryTree";
             operation = "delete";
             number = bEntry.get_text();
+            badInput = badBinaryInput();
             bEntry.set_text("");
             break;
         case lInsert:
             structure = "linkedList";
             operation = "insert";
             number = lEntry.get_text();
+            badInput = badListInput(false);
             lEntry.set_text("");
             lIndexEntry.set_text("");
             break;
@@ -223,6 +262,7 @@ void MyApp::process() {
             operation = "modify";
             number = lEntry.get_text();
             index = lIndexEntry.get_text();
+            badInput = badListInput(true);
             lEntry.set_text("");
             lIndexEntry.set_text("");
             break;
@@ -230,17 +270,61 @@ void MyApp::process() {
             structure = "linkedList";
             operation = "get";
             number = lEntry.get_text();
+            badInput = badListInput(false);
             lEntry.set_text("");
             lIndexEntry.set_text("");
             break;
     }
-
-    std::cout << "Calling createJson()\n";
-    json_t *json = createJson((char *) &structure[0], (char *) &operation[0], (char *) &number[0], (char *) &index[0]);
-    if (json != nullptr) {
-    std::cout << json_dumps(json, JSON_INDENT(4));
+    
+    if (badInput) {
+        // show error message to client
+        std::cout << "Bad input, try again\n";
     } else {
-        std::cout << "Failed to create json object\n";
+        json_t *msg = client->createJson((char *) &structure[0], (char *) &operation[0], (char *) &number[0], (char *) &index[0]);
+        
+        if (!msg) {
+            std::cout << "Failed to create json object\n";
+        } else {
+            json_t *response = client->start(msg);
+            // Verify success of operation and notify client
+            if (!response) {
+                std::cout << "An error happened getting json from server\n";
+            } else {
+                json_t *json_status = json_object_get(response, "status");
+                const char *status = json_string_value(json_status);
+                if (strcmp(status, "success") == 0) {
+                    std::cout << "Operation finished successfully\n";
+                    
+                    json_t *structure_status_json = json_object_get(response, "structure");
+                    const char *structure_status = json_string_value(structure_status_json);
+
+                    json_t *json_return = json_object_get(response, "return_value");
+                    bool return_value = json_boolean_value(json_return);
+
+                    std::string status(structure_status);
+
+                    if (return_value) {
+                        json_t *json_number = json_object_get(response, "number");
+                        int number = json_integer_value(json_number);
+                        status.append("\tReturn status: ");
+                        status.append(std::to_string(number));
+
+                        std::cout << "Value returned: " << number << "\n";
+                    }
+
+                    std::cout << "STATUS: " << status << "\n";
+
+                    if (structure == "binaryTree") {
+                        treeLabel.set_text(status);
+                    } else {
+                        listLabel.set_text(status);
+                    }
+
+                } else {
+                    std::cout << "The operation could not be completed\n";
+                }
+            }
+        }
     }
 }
 

@@ -1,6 +1,5 @@
 #include "Node.cpp"
 #include <iostream>
-using namespace std;
 
 class LinkedList {
     public:
@@ -11,6 +10,7 @@ class LinkedList {
         int get(int index);
         int getSize();
         void print();
+        std::string getString();
     private:
         Node *head, *tail;
         int size;
@@ -82,15 +82,32 @@ int LinkedList::getSize() {
 
 void LinkedList::print() {
     Node *temp = head;
-    cout << "[";
+    std::cout << "[";
     int c = 0;
     while (c != size) {
-        cout << temp->getValue();
+        std::cout << temp->getValue();
         temp = temp->getNext();
         c++;
         if (c != size) {
-            cout << ", ";
+            std::cout << ", ";
         }
     }
-    cout << "]\n";
+    std::cout << "]\n";
 }
+
+std::string LinkedList::getString() {
+    std::string buffer = "[";
+    Node *temp = head;
+    int c = 0;
+    while (c != size) {
+        buffer.append(std::to_string(temp->getValue()));
+        temp = temp->getNext();
+        c++;
+        if (c != size) {
+            buffer.append(", ");
+        }
+    }
+    buffer.append("]\n");
+    return buffer;
+}
+
