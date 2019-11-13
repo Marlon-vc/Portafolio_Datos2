@@ -1,0 +1,18 @@
+[submodule "Progras/Datos2_Progra1"]
+	path = Progras/Datos2_Progra1
+	url = https://github.com/Marlon-vc/Datos2_Progra1.git
+[submodule "Progras/CEvsEstudiantes"]
+	path = Progras/CEvsEstudiantes
+	url = https://github.com/paola0298/CEvsEstudiantes.git
+[submodule "Progras/Microservices"]
+	path = Progras/Microservices
+	url = https://github.com/paola0298/Microservices.git
+[submodule "Tareas/TareaExtraclase4"]
+	path = Tareas/TareaExtraclase4
+	url = https://github.com/Marlon-vc/TareaExtraclase4.git
+[submodule "Tareas/Tarea Algoritmos Geneticos/PoC_Algoritmos_Geneticos"]
+	path = Tareas/Tarea Algoritmos Geneticos/PoC_Algoritmos_Geneticos
+	url = https://github.com/Marlon-vc/PoC_Algoritmos_Geneticos.git
+[submodule "Tareas/Actividad 1/Data_Structures"]
+	path = Tareas/Actividad 1/Data_Structures
+	url = https://github.com/Marlon-vc/Data_Structures.git
